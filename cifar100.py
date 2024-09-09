@@ -12,8 +12,12 @@ import json
 from models.wideresnet import WideResNet28_10
 from models.resnet import resnet18
 from sgd import SGD
+import tempfile
+
+tempfile.tempdir = './tmp'
 
 
+# Function to calculate the total number of training steps
 def calc_total_steps():
     a = (bs_max - init_bs) / (delta ** ((epochs - incr_interval) / incr_interval) - 1)
     b = init_bs - a
@@ -24,11 +28,13 @@ def calc_total_steps():
     return total
 
 
+# Function to save the model checkpoint to a file
 def save_checkpoint(state):
     print(f"Saving checkpoint to {checkpoint_path}...")
     torch.save(state, checkpoint_path)
 
 
+# Function to load the model checkpoint from a file
 def load_checkpoint():
     print(f"Loading checkpoint from {checkpoint_path}...")
     checkpoint = torch.load(checkpoint_path, map_location='cuda:0')
@@ -241,10 +247,10 @@ if __name__ == '__main__':
         print("model: WideResNet28_10")
     net = net.to(device)
 
-    # 損失関数の設定
     criterion = nn.CrossEntropyLoss()
+
     if case in ["incr_bs_decay_lr", "incr_bs_incr_lr", "incr_bs_warmup_lr"]:
-        total_steps = calc_total_steps
+        total_steps = calc_total_steps()
     else:
         total_steps = (math.ceil(len(trainset) / batch_size)) * epochs
     print("total_steps: ", total_steps)
@@ -280,7 +286,7 @@ if __name__ == '__main__':
 
     print(optimizer)
 
-    # 結果を保存するためのリスト
+    # Lists to save results
     train_results = []
     test_results = []
     norm_results = []
@@ -323,7 +329,7 @@ if __name__ == '__main__':
 
         print(f'Epoch: {epoch + 1}, Steps: {steps}, Train Loss: {train_results[epoch][2]:.4f}, Test Acc: {test_results[epoch][2]:.2f}%')
 
-    # CSVファイルに保存
+    # Save to CSV file
     filename = f"../result/csv/{case}/{lr_method}"
     if lr_method == "poly":
         filename = f"{filename}_{power}"
