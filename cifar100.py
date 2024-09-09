@@ -12,9 +12,6 @@ import json
 from models.wideresnet import WideResNet28_10
 from models.resnet import resnet18
 from sgd import SGD
-import tempfile
-
-tempfile.tempdir = './tmp'
 
 
 # Function to calculate the total number of training steps
