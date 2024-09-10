@@ -1,0 +1,14 @@
+{
+    "model": "WideResNet28_10",
+    "case": "incr_bs_warmup_lr",
+    "lr": 0.1,
+    "lr_max": 0.5,
+    "epochs": 300,
+    "warmup_epochs": 30,
+    "incr_interval": 3,
+    "batch_size": 8,
+    "bs_max": 1024,
+    "checkpoint_path": "checkpoint/warmup_cosine_lr_max0.5.pth.tar",
+    "lr_method": "warmup_cosine",
+    "bs_delta": 2.0
+}
