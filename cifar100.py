@@ -204,6 +204,7 @@ if __name__ == '__main__':
     epochs = config["epochs"]
     batch_size = config["batch_size"]
     checkpoint_path = config["checkpoint_path"]
+    os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
     lr_method = config["lr_method"]
     if case in ["incr_bs_decay_lr", "incr_bs_incr_lr", "incr_bs_warmup_lr"]:
         bs_max = config["bs_max"]
