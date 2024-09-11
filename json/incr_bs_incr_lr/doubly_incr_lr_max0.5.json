@@ -7,7 +7,7 @@
     "batch_size": 8,
     "bs_max": 1024,
     "checkpoint_path": "checkpoint/doubly_incr_lr_max0.5.pth.tar",
-    "lr_method": "exp_incr",
+    "lr_method": "exp_growth",
     "bs_delta": 2.0,
     "incr_interval": 30
 }
