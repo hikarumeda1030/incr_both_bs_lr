@@ -34,7 +34,7 @@ def save_checkpoint(state):
 # Function to load the model checkpoint from a file
 def load_checkpoint():
     print(f"Loading checkpoint from {checkpoint_path}...")
-    checkpoint = torch.load(checkpoint_path, map_location='cuda:0')
+    checkpoint = torch.load(checkpoint_path)
     return checkpoint
 
 
