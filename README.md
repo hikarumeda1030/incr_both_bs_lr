@@ -23,8 +23,9 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
     "lr": 0.1,
     "lr_max": 0.2,
     "epochs": 300,
+    "incr_interval": 30,
     "warmup_epochs": 30,
-    "incr_interval": 3,
+    "warmup_interval": 3,
     "batch_size": 8,
     "bs_max": 1024,
     "checkpoint_path": "checkpoint/warmup_const_lr_max0.2.pth.tar",
@@ -40,8 +41,9 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
 |`lr`|`float` (e.g., `0.1`)|The initial learning rate for the optimizer.|
 |`lr_max`|`float` (e.g., `0.2`)|The maximum learning rate to be reached when the learning rate is increasing. Used when `case` is `"incr_bs_incr_lr"` or `"incr_bs_warmup_lr"`.|
 |`epochs`|`int` (e.g., `300`)|The total number of epochs for training.|
+|`incr_interval`|`int` (e.g., `30`)|Interval (in epochs) at which the batch size will increase. Also, the interval for increasing the learning rate when `case` is `"incr_bs_incr_lr"`. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
 |`warmup_epochs`|`int` (e.g., `30`)|Number of epochs over which the learning rate warms up from `lr` to `lr_max`. Used when `case` is `"incr_bs_warmup_lr"`.|
-|`incr_interval`|`int` (e.g., `3`)|Interval (in epochs) at which the batch size will increase. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
+|`warmup_interval`|`int` (e.g., `3`)|The interval (in epochs) during which the learning rate increases in the warmup phase. Used when `case` is `"incr_bs_warmup_lr"`.|
 |`batch_size`|`int` (e.g., `8`)|The initial batch size at the beginning of training.|
 |`bs_max`|`int` (e.g., `1024`)|The maximum batch size allowed during training. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
 |`checkpoint_path`|`str` (e.g., `"checkpoint/XXXXX.pth.tar"`)|Specifies any `"pth.tar"` file in the `checkpoint` directory. Checkpoints are saved at each epoch. If `--resume` is added to the command (`python cifar100.py json/XXXXX.json --resume`), training can be resumed from the checkpoint.|
