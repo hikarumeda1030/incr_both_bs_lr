@@ -169,18 +169,18 @@ def quadruply_incr_bs_lr_lambda(epoch):
     return min((1 / lr) * (a * (1.9 ** (epoch // incr_interval)) + b), (lr_max / lr))
 
 
-def warm_incr_const_lr_lambda(epoch):
+def warmup_const_lr_lambda(epoch):
     if epoch < warmup_epochs:
-        gamma = (lr_max / lr) ** (incr_interval / (warmup_epochs - incr_interval))
-        return min(gamma ** (epoch // incr_interval), (lr_max / lr))
+        gamma = (lr_max / lr) ** (warmup_interval / (warmup_epochs - warmup_interval))
+        return min(gamma ** (epoch // warmup_interval), (lr_max / lr))
     else:
         return (lr_max / lr)
 
 
-def warm_incr_cosine_lr_lambda(epoch):
+def warmup_cosine_lr_lambda(epoch):
     if epoch < warmup_epochs:
-        gamma = (lr_max / lr) ** (incr_interval / (warmup_epochs - incr_interval))
-        return min(gamma ** (epoch // incr_interval), (lr_max / lr))
+        gamma = (lr_max / lr) ** (warmup_interval / (warmup_epochs - warmup_interval))
+        return min(gamma ** (epoch // warmup_interval), (lr_max / lr))
     else:
         cosine_decay = 0.5 * (1 + math.cos(math.pi * (epoch - warmup_epochs) / (epochs - warmup_epochs)))
         return (lr_max / lr) * cosine_decay
@@ -215,6 +215,7 @@ if __name__ == '__main__':
         lr_max = config["lr_max"]
     if case == "incr_bs_warmup_lr":
         warmup_epochs = config["warmup_epochs"]
+        warmup_interval = config["warmup_interval"]
     if lr_method == "poly":
         power = config["power"]
 
