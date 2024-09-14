@@ -1,5 +1,5 @@
 {
-    "model": "WideResNet28_10",
+    "model": "ResNet18",
     "case": "const_bs_decay_lr",
     "lr": 0.1,
     "epochs": 300,
