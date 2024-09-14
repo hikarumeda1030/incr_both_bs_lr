@@ -18,7 +18,7 @@ To customize the training process, modify the parameters in the JSON file and re
 The following JSON configuration file is located at `json/incr_bs_warmup_lr/warmup_const_lr_max0.2.json`:
 ```
 {
-    "model": "WideResNet28_10",
+    "model": "ResNet18",
     "case": "incr_bs_warmup_lr",
     "lr": 0.1,
     "lr_max": 0.2,
@@ -27,7 +27,7 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
     "warmup_epochs": 30,
     "warmup_interval": 3,
     "batch_size": 8,
-    "bs_max": 1024,
+    "bs_max": 4096,
     "checkpoint_path": "checkpoint/warmup_const_lr_max0.2.pth.tar",
     "lr_method": "warmup_const",
     "bs_delta": 2.0
@@ -45,7 +45,7 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
 |`warmup_epochs`|`int` (e.g., `30`)|Number of epochs over which the learning rate warms up from `lr` to `lr_max`. Used when `case` is `"incr_bs_warmup_lr"`.|
 |`warmup_interval`|`int` (e.g., `3`)|The interval (in epochs) during which the learning rate increases in the warmup phase. Used when `case` is `"incr_bs_warmup_lr"`.|
 |`batch_size`|`int` (e.g., `8`)|The initial batch size at the beginning of training.|
-|`bs_max`|`int` (e.g., `1024`)|The maximum batch size allowed during training. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
+|`bs_max`|`int` (e.g., `4096`)|The maximum batch size allowed during training. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
 |`checkpoint_path`|`str` (e.g., `"checkpoint/XXXXX.pth.tar"`)|Specifies any `"pth.tar"` file in the `checkpoint` directory. Checkpoints are saved at each epoch. If `--resume` is added to the command (`python cifar100.py json/XXXXX.json --resume`), training can be resumed from the checkpoint.|
 |`lr_method`|`"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`, <br>`"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`,<br>`"warmup_const"`, `"warmup_cosine"`|Method for adjusting the learning rate. The options depend on the `case`:<br><br> - `"const_bs_decay_lr"` or `"incr_bs_decay_lr"`:<br> `"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`.<br><br> - `"incr_bs_incr_lr"`:<br> `"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`.<br><br> - `"incr_bs_warmup_lr"`:<br> `"warmup_const"`, `"warmup_cosine"`.|
 |`bs_delta`|`float` (e.g., `2.0`)|The factor by which the batch size increases after each interval. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
