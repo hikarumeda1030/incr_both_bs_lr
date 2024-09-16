@@ -3,17 +3,34 @@ Source code for reproducing our paper's experiments.
 # Abstract
 The performance of mini-batch stochastic gradient descent (SGD) strongly depends on the setting of batch size and learning rate to minimize the empirical loss in training a deep neural network. In this paper, we give theoretical analyses of mini-batch SGD with four schedulers, (i) constant batch size and decaying learning rate scheduler, (ii) increasing batch size and decaying learning rate scheduler, (iii) increasing batch size and increasing learning rate scheduler, and (iv) increasing batch size and warmup decaying learning rate scheduler. We show that mini-batch SGD using scheduler (i) does not always minimize the expectation of the full gradient norm of the empirical loss, while mini-batch SGD using each of schedulers (ii), (iii), and (iv) minimizes it. In particular, using scheduler (iii) and (iv) accelerates mini-batch SGD. We provide numerical results supporting the analyses such that using schedulers (iii) and (iv) minimizes the full gradient norm of the empirical loss faster than using other schedulers.
 # Usage
-To train a model using the CIFAR-100 dataset, run the `cifar100.py` script with a specified JSON file that contains the training parameters:
-```
+
+To train a model on **CIFAR-100**, run the `cifar100.py` script with a specified JSON file that contains the training parameters:
+
+```bash
 python cifar100.py XXXXX.json
 ```
-To resume training from a checkpoint, add the `--resume` option to the command. This will load the model state from the checkpoint specified in `checkpoint_path` and continue training from that point:
-```
+
+To resume training from a checkpoint, add the `--resume` option to the command. This will load the model state from the checkpoint specified in `checkpoint_path` within the JSON file and continue training from that point:
+
+```bash
 python cifar100.py XXXXX.json --resume
 ```
-For more details about the checkpoint, refer to the `checkpoint_path` section in the **Parameters Description**.
+
+For more details about configuring checkpoints, refer to the `checkpoint_path` section in the **Parameters Description**.
+
+### Customizing Training
 
 To customize the training process, modify the parameters in the JSON file and rerun the script. You can adjust the model architecture, learning rate, batch size, and other parameters to explore different training strategies and observe their effects on model performance.
+
+### Training on Tiny ImageNet
+
+To train a model on **Tiny ImageNet**, use the `tiny_imagenet.py` script. The method is the same as described above for `cifar100.py`:
+
+```bash
+python tiny_imagenet.py XXXXX.json
+python tiny_imagenet.py XXXXX.json --resume
+```
+
 ## Example JSON Configuration
 The following JSON configuration file is located at `json/incr_bs_warmup_lr/warmup_const_lr_max0.2.json`:
 ```
