@@ -1,4 +1,3 @@
-'''Train CIFAR100 with PyTorch.'''
 import argparse
 import torch
 import torch.nn as nn
@@ -12,9 +11,6 @@ import json
 from models.wideresnet import build_wide_resnet
 from models.resnet import build_resnet
 from sgd import SGD
-import tempfile
-
-tempfile.tempdir = './tmp'
 
 
 # Function to calculate the total number of training steps
@@ -37,7 +33,7 @@ def save_checkpoint(state):
 # Function to load the model checkpoint from a file
 def load_checkpoint():
     print(f"Loading checkpoint from {checkpoint_path}...")
-    checkpoint = torch.load(checkpoint_path, map_location='cuda:0')
+    checkpoint = torch.load(checkpoint_path)
     return checkpoint
 
 
