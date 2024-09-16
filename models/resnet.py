@@ -1,163 +1,116 @@
-"""resnet in pytorch
-
-
-
-[1] Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun.
-
-    Deep Residual Learning for Image Recognition
-    https://arxiv.org/abs/1512.03385v1
-"""
-
-import torch
 import torch.nn as nn
 
-class BasicBlock(nn.Module):
-    """Basic Block for resnet 18 and resnet 34
 
-    """
+class ResidualBlock(nn.Module):
+    """Base class for different types of residual blocks used in ResNet architectures."""
 
-    #BasicBlock and BottleNeck block
-    #have different output size
-    #we use class attribute expansion
-    #to distinct
-    expansion = 1
-
-    def __init__(self, in_channels, out_channels, stride=1):
+    def __init__(self, input_channels, output_channels, stride, expansion_factor):
         super().__init__()
+        self.expansion_factor = expansion_factor
+        self.residual_path = self._make_residual_path(input_channels, output_channels, stride)
+        self.shortcut_path = self._make_shortcut_path(input_channels, output_channels, stride)
 
-        #residual function
-        self.residual_function = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels * BasicBlock.expansion, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels * BasicBlock.expansion)
-        )
-
-        #shortcut
-        self.shortcut = nn.Sequential()
-
-        #the shortcut output dimension is not the same with residual function
-        #use 1*1 convolution to match the dimension
-        if stride != 1 or in_channels != BasicBlock.expansion * out_channels:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels * BasicBlock.expansion, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(out_channels * BasicBlock.expansion)
+    def _make_shortcut_path(self, input_channels, output_channels, stride):
+        if stride != 1 or input_channels != output_channels * self.expansion_factor:
+            return nn.Sequential(
+                nn.Conv2d(input_channels, output_channels * self.expansion_factor, kernel_size=1, stride=stride, bias=False),
+                nn.BatchNorm2d(output_channels * self.expansion_factor)
             )
+        else:
+            return nn.Sequential()
 
     def forward(self, x):
-        return nn.ReLU(inplace=True)(self.residual_function(x) + self.shortcut(x))
+        return nn.ReLU(inplace=True)(self.residual_path(x) + self.shortcut_path(x))
 
-class BottleNeck(nn.Module):
-    """Residual block for resnet over 50 layers
 
-    """
-    expansion = 4
-    def __init__(self, in_channels, out_channels, stride=1):
-        super().__init__()
-        self.residual_function = nn.Sequential(
-            nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channels),
+class BasicResidualBlock(ResidualBlock):
+    expansion_factor = 1
+
+    def __init__(self, input_channels, output_channels, stride=1):
+        super().__init__(input_channels, output_channels, stride, BasicResidualBlock.expansion_factor)
+
+    def _make_residual_path(self, input_channels, output_channels, stride):
+        return nn.Sequential(
+            nn.Conv2d(input_channels, output_channels, kernel_size=3, stride=stride, padding=1, bias=False),
+            nn.BatchNorm2d(output_channels),
             nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels, stride=stride, kernel_size=3, padding=1, bias=False),
-            nn.BatchNorm2d(out_channels),
-            nn.ReLU(inplace=True),
-            nn.Conv2d(out_channels, out_channels * BottleNeck.expansion, kernel_size=1, bias=False),
-            nn.BatchNorm2d(out_channels * BottleNeck.expansion),
+            nn.Conv2d(output_channels, output_channels * self.expansion_factor, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(output_channels * self.expansion_factor)
         )
 
-        self.shortcut = nn.Sequential()
 
-        if stride != 1 or in_channels != out_channels * BottleNeck.expansion:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels * BottleNeck.expansion, stride=stride, kernel_size=1, bias=False),
-                nn.BatchNorm2d(out_channels * BottleNeck.expansion)
-            )
+class BottleNeckResidualBlock(ResidualBlock):
+    expansion_factor = 4
 
-    def forward(self, x):
-        return nn.ReLU(inplace=True)(self.residual_function(x) + self.shortcut(x))
+    def __init__(self, input_channels, output_channels, stride=1):
+        super().__init__(input_channels, output_channels, stride, BottleNeckResidualBlock.expansion_factor)
 
-class ResNet(nn.Module):
+    def _make_residual_path(self, input_channels, output_channels, stride):
+        return nn.Sequential(
+            nn.Conv2d(input_channels, output_channels, kernel_size=1, bias=False),
+            nn.BatchNorm2d(output_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(output_channels, output_channels, stride=stride, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(output_channels),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(output_channels, output_channels * self.expansion_factor, kernel_size=1, bias=False),
+            nn.BatchNorm2d(output_channels * self.expansion_factor),
+        )
 
-    def __init__(self, block, num_block, num_classes=100):
+
+class ResNetModel(nn.Module):
+    """ResNet model class to define ResNet architecture."""
+
+    def __init__(self, residual_block, num_blocks_per_layer, dataset_name='CIFAR100'):
         super().__init__()
+        self.input_channels = 64
+        num_classes = self._get_num_classes(dataset_name)
+        self.initial_conv = self._make_initial_conv()
+        self.layers = self._make_resnet_layers(residual_block, num_blocks_per_layer)
+        self.global_avg_pool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc_output = nn.Linear(512 * residual_block.expansion_factor, num_classes)
 
-        self.in_channels = 64
+    def _get_num_classes(self, dataset_name):
+        return 200 if dataset_name == 'TinyImageNet' else 100
 
-        self.conv1 = nn.Sequential(
-            nn.Conv2d(3, 64, kernel_size=3, padding=1, bias=False),
+    def _make_initial_conv(self):
+        return nn.Sequential(
+            nn.Conv2d(3, 64, kernel_size=3, stride=1, padding=1, bias=False),
             nn.BatchNorm2d(64),
-            nn.ReLU(inplace=True))
-        #we use a different inputsize than the original paper
-        #so conv2_x's stride is 1
-        self.conv2_x = self._make_layer(block, 64, num_block[0], 1)
-        self.conv3_x = self._make_layer(block, 128, num_block[1], 2)
-        self.conv4_x = self._make_layer(block, 256, num_block[2], 2)
-        self.conv5_x = self._make_layer(block, 512, num_block[3], 2)
-        self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Linear(512 * block.expansion, num_classes)
+            nn.ReLU(inplace=True)
+        )
 
-    def _make_layer(self, block, out_channels, num_blocks, stride):
-        """make resnet layers(by layer i didnt mean this 'layer' was the
-        same as a neuron netowork layer, ex. conv layer), one layer may
-        contain more than one residual block
-
-        Args:
-            block: block type, basic block or bottle neck block
-            out_channels: output depth channel number of this layer
-            num_blocks: how many blocks per layer
-            stride: the stride of the first block of this layer
-
-        Return:
-            return a resnet layer
-        """
-
-        # we have num_block blocks per layer, the first block
-        # could be 1 or 2, other blocks would always be 1
-        strides = [stride] + [1] * (num_blocks - 1)
+    def _make_resnet_layers(self, residual_block, num_blocks_per_layer):
         layers = []
-        for stride in strides:
-            layers.append(block(self.in_channels, out_channels, stride))
-            self.in_channels = out_channels * block.expansion
-
+        output_channels = [64, 128, 256, 512]
+        for i, num_blocks in enumerate(num_blocks_per_layer):
+            stride = 1 if i == 0 else 2
+            layers.append(self._make_resnet_layer(residual_block, output_channels[i], num_blocks, stride))
         return nn.Sequential(*layers)
 
+    def _make_resnet_layer(self, residual_block, output_channels, num_blocks, stride):
+        strides = [stride] + [1] * (num_blocks - 1)
+        blocks = []
+        for stride in strides:
+            blocks.append(residual_block(self.input_channels, output_channels, stride))
+            self.input_channels = output_channels * residual_block.expansion_factor
+        return nn.Sequential(*blocks)
+
     def forward(self, x):
-        output = self.conv1(x)
-        output = self.conv2_x(output)
-        output = self.conv3_x(output)
-        output = self.conv4_x(output)
-        output = self.conv5_x(output)
-        output = self.avg_pool(output)
-        output = output.view(output.size(0), -1)
-        output = self.fc(output)
-
-        return output
-
-def resnet18():
-    """ return a ResNet 18 object
-    """
-    return ResNet(BasicBlock, [2, 2, 2, 2])
-
-def resnet34():
-    """ return a ResNet 34 object
-    """
-    return ResNet(BasicBlock, [3, 4, 6, 3])
-
-def resnet50():
-    """ return a ResNet 50 object
-    """
-    return ResNet(BottleNeck, [3, 4, 6, 3])
-
-def resnet101():
-    """ return a ResNet 101 object
-    """
-    return ResNet(BottleNeck, [3, 4, 23, 3])
-
-def resnet152():
-    """ return a ResNet 152 object
-    """
-    return ResNet(BottleNeck, [3, 8, 36, 3])
+        x = self.initial_conv(x)
+        x = self.layers(x)
+        x = self.global_avg_pool(x)
+        x = x.view(x.size(0), -1)
+        return self.fc_output(x)
 
 
-
+def build_resnet(model_type='resnet18', dataset_name='CIFAR100'):
+    model_map = {
+        'resnet18': (BasicResidualBlock, [2, 2, 2, 2]),
+        'resnet34': (BasicResidualBlock, [3, 4, 6, 3]),
+        'resnet50': (BottleNeckResidualBlock, [3, 4, 6, 3]),
+        'resnet101': (BottleNeckResidualBlock, [3, 4, 23, 3]),
+        'resnet152': (BottleNeckResidualBlock, [3, 8, 36, 3]),
+    }
+    block, layers = model_map[model_type]
+    return ResNetModel(block, layers, dataset_name=dataset_name)

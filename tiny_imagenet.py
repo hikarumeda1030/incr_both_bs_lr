@@ -1,12 +1,15 @@
-'''Train CIFAR100 with PyTorch.'''
+'''Train Tiny ImageNet with PyTorch.'''
 import argparse
 import torch
 import torch.nn as nn
 import torch.optim as optim
-import torchvision
-import torchvision.transforms as transforms
+from torch.utils.data import Dataset, DataLoader
+from torchvision import datasets, transforms
+from PIL import Image
 import math
 import os
+import zipfile
+import requests
 import csv
 import json
 from models.wideresnet import build_wide_resnet
@@ -15,6 +18,77 @@ from sgd import SGD
 import tempfile
 
 tempfile.tempdir = './tmp'
+
+
+class TinyImageNetValDataset(Dataset):
+    def __init__(self, annotations_map, img_dir, class_to_idx, transform=None):
+        self.annotations_map = annotations_map
+        self.img_dir = img_dir
+        self.transform = transform
+        self.class_to_idx = class_to_idx
+        self.image_filenames = list(annotations_map.keys())  # List of image file names
+
+    def __len__(self):
+        return len(self.image_filenames)
+
+    def __getitem__(self, idx):
+        img_path = os.path.join(self.img_dir, self.image_filenames[idx])
+        image = Image.open(img_path).convert('RGB')
+
+        class_label = self.annotations_map[self.image_filenames[idx]]
+        label = self.class_to_idx[class_label]
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image, label
+
+
+# Function to download and extract Tiny ImageNet
+def download_and_extract_tiny_imagenet(data_dir='./data'):
+    url = "http://cs231n.stanford.edu/tiny-imagenet-200.zip"
+    zip_filename = os.path.join(data_dir, "tiny-imagenet-200.zip")
+    extracted_dir = os.path.join(data_dir, "tiny-imagenet-200")
+
+    # Create the directory if it doesn't exist
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    # Download the data if it doesn't exist
+    if not os.path.exists(extracted_dir):
+        print("Downloading Tiny ImageNet dataset...")
+        response = requests.get(url, stream=True)
+        with open(zip_filename, 'wb') as f:
+            for chunk in response.iter_content(chunk_size=1024):
+                if chunk:
+                    f.write(chunk)
+
+        # Extract the data using zipfile
+        print("Extracting Tiny ImageNet dataset...")
+        with zipfile.ZipFile(zip_filename, 'r') as zip_ref:
+            zip_ref.extractall(data_dir)
+
+        print("Tiny ImageNet dataset is ready.")
+    else:
+        print("Tiny ImageNet dataset already exists.")
+
+
+def load_validation_annotations():
+    annotations_path = './data/tiny-imagenet-200/val/val_annotations.txt'
+
+    # Use a context manager to open the file
+    with open(annotations_path, 'r') as file:
+        annotations_map = {}
+
+        # Read each line and map the image filename to its class label
+        for line in file:
+            parts = line.strip().split()
+            if len(parts) >= 2:  # Check for safety to ensure there are enough elements
+                image_filename = parts[0]
+                class_label = parts[1]
+                annotations_map[image_filename] = class_label
+
+    return annotations_map
 
 
 # Function to calculate the total number of training steps
@@ -223,18 +297,23 @@ if __name__ == '__main__':
         power = config["power"]
 
     # Dataset Preparation
-    mean = (0.5070751592371323, 0.48654887331495095, 0.4409178433670343)
-    std = (0.2673342858792401, 0.2564384629170883, 0.27615047132568404)
-    transform_train = transforms.Compose([transforms.RandomCrop(32, padding=4),
+    download_and_extract_tiny_imagenet(data_dir='./data')
+    mean = (0.4802, 0.4481, 0.3975)
+    std = (0.2302, 0.2265, 0.2262)
+    transform_train = transforms.Compose([transforms.RandomCrop(64, padding=8),
                                           transforms.RandomHorizontalFlip(),
                                           transforms.RandomRotation(15),
                                           transforms.ToTensor(),
                                           transforms.Normalize(mean, std)])
+    trainset = datasets.ImageFolder(root='./data/tiny-imagenet-200/train', transform=transform_train)
+    trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True)
+    class_to_idx = trainset.class_to_idx
+
+    annotations_map = load_validation_annotations()
+    val_image_dir = './data/tiny-imagenet-200/val/images'
     transform_test = transforms.Compose([transforms.ToTensor(),
                                          transforms.Normalize(mean, std)])
-    trainset = torchvision.datasets.CIFAR100(root='./data', train=True, download=False, transform=transform_train)
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
-    testset = torchvision.datasets.CIFAR100(root='./data', train=False, download=False, transform=transform_test)
+    testset = TinyImageNetValDataset(annotations_map=annotations_map, img_dir=val_image_dir, class_to_idx=class_to_idx, transform=transform_test)
     testloader = torch.utils.data.DataLoader(testset, batch_size=100, shuffle=False, num_workers=2)
 
     # Device Setting
@@ -242,10 +321,10 @@ if __name__ == '__main__':
 
     # Model Preparation
     if model == "ResNet18":
-        net = build_resnet(model_type="resnet18", dataset_name='CIFAR100')
+        net = build_resnet(model_type="resnet18", dataset_name='TinyImageNet')
         print("model: ResNet18")
     elif model == "WideResNet28_10":
-        net = build_wide_resnet(model_type=model, dataset_name='CIFAR100')
+        net = build_wide_resnet(model_type=model, dataset_name='TinyImageNet')
         print("model: WideResNet28_10")
     net = net.to(device)
 
@@ -332,7 +411,7 @@ if __name__ == '__main__':
         print(f'Epoch: {epoch + 1}, Steps: {steps}, Train Loss: {train_results[epoch][2]:.4f}, Test Acc: {test_results[epoch][2]:.2f}%')
 
     # Save to CSV file
-    filename = f"../result/csv/CIFAR100/{model}/{case}/{lr_method}"
+    filename = f"../result/csv/TinyImageNet/{model}/{case}/{lr_method}"
     if lr_method == "poly":
         filename = f"{filename}_{power}"
     elif lr_method in ["exp_growth", "warmup_const", "warmup_cosine", "triply_incr_bs", "quadruply_incr_bs"]:

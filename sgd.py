@@ -5,35 +5,35 @@ from torch.optim import Optimizer
 class SGD(Optimizer):
     def __init__(self, params, lr) -> None:
         if lr < 0.0:
-            raise ValueError("Invalid learning rate: {}".format(lr))
+            raise ValueError(f"Learning rate must be non-negative, but got {lr}.")
         defaults = dict(lr=lr)
         super(SGD, self).__init__(params, defaults)
 
     def __setstate__(self, state):
         super(SGD, self).__setstate__(state)
 
-    def step(self, closure=None, itr=0):
+    def step(self, closure=None, iteration=0):
         loss = None
         if closure is not None:
             with torch.enable_grad():
                 loss = closure()
-        if itr != 0:
-            dp_list = []
+        if iteration != 0:
+            gradient_list = []
 
         for group in self.param_groups:
             lr = group['lr']
 
-            for p in group['params']:
-                if p.grad is None:
+            for param in group['params']:
+                if param.grad is None:
                     continue
-                d_p = p.grad.data
+                gradient = param.grad.data
 
-                if itr != 0:
-                    dp_list.append(d_p)
+                if iteration != 0:
+                    gradient_list.append(gradient)
 
-                p.data.add_(d_p, alpha=-lr)
+                param.data.add_(gradient, alpha=-lr)
 
-        if itr != 0:
-            return dp_list
+        if iteration != 0:
+            return gradient_list
         else:
             return loss
