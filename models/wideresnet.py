@@ -3,103 +3,92 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-class ResidualBlock(nn.Module):
-    def __init__(self, input_channels, output_channels, stride, dropout_rate=0.0):
-        super(ResidualBlock, self).__init__()
-        self.batch_norm1 = nn.BatchNorm2d(input_channels)
+class BasicBlock(nn.Module):
+    def __init__(self, in_planes, out_planes, stride, dropRate=0.0):
+        super(BasicBlock, self).__init__()
+        self.bn1 = nn.BatchNorm2d(in_planes)
         self.relu1 = nn.ReLU(inplace=True)
-        self.conv_layer1 = nn.Conv2d(input_channels, output_channels, kernel_size=3, stride=stride,
-                                     padding=1, bias=False)
-        self.batch_norm2 = nn.BatchNorm2d(output_channels)
+        self.conv1 = nn.Conv2d(in_planes, out_planes, kernel_size=3, stride=stride,
+                               padding=1, bias=False)
+        self.bn2 = nn.BatchNorm2d(out_planes)
         self.relu2 = nn.ReLU(inplace=True)
-        self.conv_layer2 = nn.Conv2d(output_channels, output_channels, kernel_size=3, stride=1,
-                                     padding=1, bias=False)
-        self.dropout_rate = dropout_rate
-        self.has_shortcut = (input_channels != output_channels)
-        self.shortcut_layer = nn.Conv2d(input_channels, output_channels, kernel_size=1, stride=stride, padding=0, bias=False) if self.has_shortcut else None
+        self.conv2 = nn.Conv2d(out_planes, out_planes, kernel_size=3, stride=1,
+                               padding=1, bias=False)
+        self.droprate = dropRate
+        self.equalInOut = (in_planes == out_planes)
+        self.convShortcut = (not self.equalInOut) and nn.Conv2d(in_planes, out_planes, kernel_size=1, stride=stride, padding=0, bias=False) or None
 
     def forward(self, x):
-        shortcut = x
-        if self.has_shortcut:
-            x = self.relu1(self.batch_norm1(x))
+        if not self.equalInOut:
+            x = self.relu1(self.bn1(x))
         else:
-            shortcut = self.relu1(self.batch_norm1(x))
-        out = self.conv_layer1(shortcut if self.has_shortcut else x)
-        out = self.relu2(self.batch_norm2(out))
-        if self.dropout_rate > 0:
-            out = F.dropout(out, p=self.dropout_rate, training=self.training)
-        out = self.conv_layer2(out)
-        if self.has_shortcut:
-            shortcut = self.shortcut_layer(x)
-        return torch.add(shortcut, out)
+            out = self.relu1(self.bn1(x))
+        out = self.relu2(self.bn2(self.conv1(out if self.equalInOut else x)))
+        if self.droprate > 0:
+            out = F.dropout(out, p=self.droprate, training=self.training)
+        out = self.conv2(out)
+        return torch.add(x if self.equalInOut else self.convShortcut(x), out)
 
 
-class ResidualLayer(nn.Module):
-    def __init__(self, num_blocks, input_channels, output_channels, block, stride, dropout_rate=0.0):
-        super(ResidualLayer, self).__init__()
+class NetworkBlock(nn.Module):
+    def __init__(self, nb_layers, in_planes, out_planes, block, stride, dropRate=0.0):
+        super(NetworkBlock, self).__init__()
+        self.layer = self._make_layer(block, in_planes, out_planes, nb_layers, stride, dropRate)
 
-        self.blocks = nn.Sequential(*[
-            block(
-                input_channels if i == 0 else output_channels,
-                output_channels,
-                stride if i == 0 else 1,
-                dropout_rate
-            ) for i in range(num_blocks)
-        ])
+    def _make_layer(self, block, in_planes, out_planes, nb_layers, stride, dropRate):
+        layers = []
+        for i in range(int(nb_layers)):
+            layers.append(block(i == 0 and in_planes or out_planes, out_planes, i == 0 and stride or 1, dropRate))
+        return nn.Sequential(*layers)
 
     def forward(self, x):
-        return self.blocks(x)
+        return self.layer(x)
 
 
 class WideResNet(nn.Module):
-    def __init__(self, depth, width_multiplier, dropout_rate=0.0, dataset_name='CIFAR100'):
+    def __init__(self, depth, width_multiplier, dropRate=0.0, dataset_name='CIFAR100'):
         super(WideResNet, self).__init__()
-        layer_channels = [16, 16 * width_multiplier, 32 * width_multiplier, 64 * width_multiplier]
+        nChannels = [16, 16 * width_multiplier, 32 * width_multiplier, 64 * width_multiplier]
         assert ((depth - 4) % 6 == 0)
-        num_blocks_per_layer = (depth - 4) // 6
-        block = ResidualBlock
+        n = (depth - 4) / 6
+        block = BasicBlock
 
         # Set number of classes based on dataset
         num_classes = 200 if dataset_name == 'TinyImageNet' else 100
 
-        self.initial_conv = nn.Conv2d(3, layer_channels[0], kernel_size=3, stride=1, padding=1, bias=False)
-        self.initial_pool = None  # Placeholder if you want to add pooling later
-
-        # Residual layers
-        self.layer1 = ResidualLayer(num_blocks_per_layer, layer_channels[0], layer_channels[1], block, 1, dropout_rate)
-        self.layer2 = ResidualLayer(num_blocks_per_layer, layer_channels[1], layer_channels[2], block, 2, dropout_rate)
-        self.layer3 = ResidualLayer(num_blocks_per_layer, layer_channels[2], layer_channels[3], block, 2, dropout_rate)
-
-        # Global average pooling and fully connected classifier
-        self.final_batch_norm = nn.BatchNorm2d(layer_channels[3])
+        # 1st conv before any network block
+        self.conv1 = nn.Conv2d(3, nChannels[0], kernel_size=3, stride=1,
+                               padding=1, bias=False)
+        # 1st block
+        self.block1 = NetworkBlock(n, nChannels[0], nChannels[1], block, 1, dropRate)
+        # 2nd block
+        self.block2 = NetworkBlock(n, nChannels[1], nChannels[2], block, 2, dropRate)
+        # 3rd block
+        self.block3 = NetworkBlock(n, nChannels[2], nChannels[3], block, 2, dropRate)
+        # global average pooling and classifier
+        self.bn1 = nn.BatchNorm2d(nChannels[3])
         self.relu = nn.ReLU(inplace=True)
-        self.classifier = nn.Linear(layer_channels[3], num_classes)
-        self.output_channels = layer_channels[3]
+        self.fc = nn.Linear(nChannels[3], num_classes)
+        self.nChannels = nChannels[3]
 
-        # Initialize weights
-        self._initialize_weights()
-
-    def _initialize_weights(self):
-        for module in self.modules():
-            if isinstance(module, nn.Conv2d):
-                nn.init.kaiming_normal_(module.weight, mode='fan_out', nonlinearity='relu')
-            elif isinstance(module, nn.BatchNorm2d):
-                module.weight.data.fill_(1)
-                module.bias.data.zero_()
-            elif isinstance(module, nn.Linear):
-                module.bias.data.zero_()
+        for m in self.modules():
+            if isinstance(m, nn.Conv2d):
+                nn.init.kaiming_normal_(m.weight, mode='fan_out', nonlinearity='relu')
+            elif isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
+            elif isinstance(m, nn.Linear):
+                m.bias.data.zero_()
 
     def forward(self, x):
-        out = self.initial_conv(x)
-        if self.initial_pool is not None:
-            out = self.initial_pool(out)
-        out = self.layer1(out)
-        out = self.layer2(out)
-        out = self.layer3(out)
-        out = self.relu(self.final_batch_norm(out))
+        out = self.conv1(x)
+        out = self.block1(out)
+        out = self.block2(out)
+        out = self.block3(out)
+        out = self.relu(self.bn1(out))
         out = F.avg_pool2d(out, 8)
-        out = out.view(-1, self.output_channels)
-        return self.classifier(out)
+        out = out.view(-1, self.nChannels)
+        return self.fc(out)
 
 
 def build_wide_resnet(model_type='WideResNet40_4', dataset_name='CIFAR100'):
