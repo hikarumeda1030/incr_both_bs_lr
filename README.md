@@ -20,7 +20,7 @@ For more details about configuring checkpoints, refer to the `checkpoint_path` s
 
 ### Customizing Training
 
-To customize the training process, modify the parameters in the JSON file and rerun the script. You can adjust the model architecture, learning rate, batch size, and other parameters to explore different training strategies and observe their effects on model performance.
+To customize the training process, modify the parameters in the JSON file and rerun the script. You can adjust the model architecture, learning rate, batch size, and other parameters to explore different training schedulers and observe their effects on model performance.
 
 ### Training on Tiny ImageNet
 
@@ -54,7 +54,7 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
 | Parameter | Value | Description |
 | :-------- | :---- | :---------- |
 | `model` | `"WideResNet28_10"` or `"ResNet18"` |Specifies the model architecture to use. Options are `WideResNet28_10` or `ResNet18`.|
-| `case` |`"const_bs_decay_lr"`,<br>`"incr_bs_decay_lr"`,<br>`"incr_bs_incr_lr"`,<br>`"incr_bs_warmup_lr"`|Describes the training strategy:<br> - `"const_bs_decay_lr"`: Constant batch size with decaying learning rate.<br> - `"incr_bs_decay_lr"`: Increasing batch size with decaying learning rate.<br> - `"incr_bs_incr_lr"`: Increasing both batch size and learning rate.<br> - `"incr_bs_warmup_lr"`: Increasing batch size with a learning rate warmup.|
+| `case` |`"const_bs_decay_lr"`,<br>`"incr_bs_decay_lr"`,<br>`"incr_bs_incr_lr"`,<br>`"incr_bs_warmup_lr"`|Describes the training scheduler:<br> - `"const_bs_decay_lr"`: Constant batch size and decaying learning rate scheduler.<br> - `"incr_bs_decay_lr"`: Increasing batch size and decaying learning rate scheduler.<br> - `"incr_bs_incr_lr"`: Increasing batch size and increasing learning rate scheduler.<br> - `"incr_bs_warmup_lr"`: Increasing batch size and warm-up decaying learning rate scheduler.|
 |`lr`|`float` (e.g., `0.1`)|The initial learning rate for the optimizer.|
 |`lr_max`|`float` (e.g., `0.2`)|The maximum learning rate to be reached when the learning rate is increasing. Used when `case` is `"incr_bs_incr_lr"` or `"incr_bs_warmup_lr"`.|
 |`epochs`|`int` (e.g., `300`)|The total number of epochs for training.|
