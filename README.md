@@ -24,10 +24,17 @@ For more details about configuring checkpoints, refer to the `checkpoint_path` s
 
 To customize the training process, modify the parameters in the JSON file and rerun the script. You can adjust the model architecture, learning rate, batch size, and other parameters to explore different training schedulers and observe their effects on model performance.
 
-### Training on Tiny ImageNet
+### Training on CIFAR10 and Tiny ImageNet
 
-To train a model on **Tiny ImageNet**, use the `tiny_imagenet.py` script. The method is the same as described above for `cifar100.py`:
+To train a model on **CIFAR10** or **Tiny ImageNet**, use the respective scripts `cifar10.py` or `tiny_imagenet.py`. The method for both is similar, as shown below:
 
+For **CIFAR10**:
+```bash
+python cifar10.py XXXXX.json
+python cifar10.py XXXXX.json --resume
+```
+
+For **Tiny ImageNet**:
 ```bash
 python tiny_imagenet.py XXXXX.json
 python tiny_imagenet.py XXXXX.json --resume
@@ -66,6 +73,7 @@ The following JSON configuration file is located at `json/incr_bs_warmup_lr/warm
 |`batch_size`|`int` (e.g., `8`)|The initial batch size at the beginning of training.|
 |`bs_max`|`int` (e.g., `4096`)|The maximum batch size allowed during training. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
 |`checkpoint_path`|`str` (e.g., `"checkpoint/XXXXX.pth.tar"`)|Specifies any `"pth.tar"` file in the `checkpoint` directory. Checkpoints are saved at each epoch. If `--resume` is added to the command (`python cifar100.py json/XXXXX.json --resume`), training can be resumed from the checkpoint.|
-|`lr_method`|`"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`, <br>`"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`,<br>`"warmup_const"`, `"warmup_cosine"`|Method for adjusting the learning rate. The options depend on the `case`:<br><br> - `"const_bs_decay_lr"` or `"incr_bs_decay_lr"`:<br> `"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`.<br><br> - `"incr_bs_incr_lr"`:<br> `"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`.<br><br> - `"incr_bs_warmup_lr"`:<br> `"warmup_const"`, `"warmup_cosine"`.|
+|`lr_method`|`"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`, <br>`"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`,`"scaled_bs"`,<br>`"warmup_const"`, `"warmup_cosine"`|Method for adjusting the learning rate. The options depend on the `case`:<br><br> - `"const_bs_decay_lr"` or `"incr_bs_decay_lr"`:<br> `"constant"`, `"cosine"`, `"diminishing"`, `"linear"`, `"poly"`.<br><br> - `"incr_bs_incr_lr"`:<br> `"exp_growth"`, `"triply_incr_bs"`, `"quadruply_incr_bs"`, `"scaled_bs"`.<br><br> - `"incr_bs_warmup_lr"`:<br> `"warmup_const"`, `"warmup_cosine"`.|
 |`bs_delta`|`float` (e.g., `2.0`)|The factor by which the batch size increases after each interval. Used when `case` is `"incr_bs_decay_lr"`, `"incr_bs_incr_lr"`, or `"incr_bs_warmup_lr"`.|
 |`power`| `float` (e.g., `2.0`) |A parameter used when `lr_method` is set to `"poly"`, defining the polynomial decay rate of the learning rate.|
+|`"lr_multiplier"`| `float` (e.g., `1.4`) |The factor by which the learning rate increases after each interval. Used when `lr_method` is `"scaled_bs"`.|
