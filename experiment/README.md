@@ -18,17 +18,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_1/scheduler_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_1/norm_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_1/loss_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_1/test_1.png" width="100%" /><br>
@@ -45,17 +45,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_2/scheduler_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_2/norm_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_2/loss_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_2/test_2.png" width="100%" /><br>
@@ -72,17 +72,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_3/scheduler_3.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_3/norm_3.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_3/loss_3.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_3/test_3.png" width="100%" /><br>
@@ -99,17 +99,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_4/scheduler_4.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_4/norm_4.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_4/loss_4.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_4/test_4.png" width="100%" /><br>
@@ -126,17 +126,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_5/scheduler_5.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_5/norm_5.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_5/loss_5.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_5/test_5.png" width="100%" /><br>
@@ -155,17 +155,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_6/scheduler_d_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_6/norm_d_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_6/loss_d_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_6/test_d_1.png" width="100%" /><br>
@@ -182,17 +182,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_7/scheduler_d_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_7/norm_d_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_7/loss_d_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_7/test_d_2.png" width="100%" /><br>
@@ -211,17 +211,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_8/scheduler_1_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_8/norm_1_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_8/loss_1_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_8/test_1_1.png" width="100%" /><br>
@@ -238,17 +238,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_9/scheduler_2_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_9/norm_2_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_9/loss_2_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_9/test_2_1.png" width="100%" /><br>
@@ -265,17 +265,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_10/scheduler_3_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_10/norm_3_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_10/loss_3_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_10/test_3_1.png" width="100%" /><br>
@@ -292,17 +292,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_11/scheduler_4_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_11/norm_4_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_11/loss_4_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_11/test_4_1.png" width="100%" /><br>
@@ -319,17 +319,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_12/scheduler_5_1.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_12/norm_5_1.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_12/loss_5_1.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_12/test_5_1.png" width="100%" /><br>
@@ -348,17 +348,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_13/scheduler_1_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_13/norm_1_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_13/loss_1_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_13/test_1_2.png" width="100%" /><br>
@@ -375,17 +375,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_14/scheduler_2_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_14/norm_2_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_14/loss_2_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_14/test_2_2.png" width="100%" /><br>
@@ -402,17 +402,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_15/scheduler_3_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_15/norm_3_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_15/loss_3_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_15/test_3_2.png" width="100%" /><br>
@@ -429,17 +429,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_16/scheduler_4_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_16/norm_4_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_16/loss_4_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_16/test_4_2.png" width="100%" /><br>
@@ -456,17 +456,17 @@ Each figure represents critical findings and visualizations discussed in the pap
     <tr>
         <td align="center">
             <img src="graph/figure_17/scheduler_5_2.png" width="100%" /><br>
-            (a) Learning rate $\eta_t$ and batch size $b$ versus epochs
+            (a) Learning rate η_t and batch size b versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_17/norm_5_2.png" width="100%" /><br>
-            (b) Full gradient norm $\|\nabla f(\theta_e)\|$ versus epochs
+            (b) Full gradient norm ||∇f(θ_e)|| versus epochs
         </td>
     </tr>
     <tr>
         <td align="center">
             <img src="graph/figure_17/loss_5_2.png" width="100%" /><br>
-            (c) Empirical loss $f(\theta_e)$ versus epochs
+            (c) Empirical loss f(θ_e) versus epochs
         </td>
         <td align="center">
             <img src="graph/figure_17/test_5_2.png" width="100%" /><br>
