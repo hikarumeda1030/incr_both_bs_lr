@@ -54,7 +54,11 @@ class WideResNet(nn.Module):
         block = BasicBlock
 
         # Set number of classes based on dataset
-        num_classes = 200 if dataset_name == 'TinyImageNet' else 100
+        num_classes = (
+            200 if dataset_name == 'TinyImageNet' else
+            10 if dataset_name == 'CIFAR10' else
+            100
+        )
 
         # 1st conv before any network block
         self.conv1 = nn.Conv2d(3, nChannels[0], kernel_size=3, stride=1,

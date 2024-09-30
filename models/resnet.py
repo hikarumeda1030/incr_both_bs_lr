@@ -71,7 +71,12 @@ class ResNetModel(nn.Module):
         self.fc_output = nn.Linear(512 * residual_block.expansion_factor, num_classes)
 
     def _get_num_classes(self, dataset_name):
-        return 200 if dataset_name == 'TinyImageNet' else 100
+        if dataset_name == 'TinyImageNet':
+            return 200
+        elif dataset_name == 'CIFAR10':
+            return 10
+        else:
+            return 100
 
     def _make_initial_conv(self):
         return nn.Sequential(
