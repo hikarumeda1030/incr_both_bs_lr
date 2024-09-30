@@ -1,3 +1,4 @@
+'''Train Tiny ImageNet with PyTorch.'''
 import argparse
 import torch
 import torch.nn as nn
@@ -14,6 +15,9 @@ import json
 from models.wideresnet import build_wide_resnet
 from models.resnet import build_resnet
 from sgd import SGD
+import tempfile
+
+tempfile.tempdir = './tmp'
 
 
 class TinyImageNetValDataset(Dataset):
@@ -89,12 +93,17 @@ def load_validation_annotations():
 
 # Function to calculate the total number of training steps
 def calc_total_steps():
-    a = (bs_max - init_bs) / (delta ** ((epochs - incr_interval) / incr_interval) - 1)
-    b = init_bs - a
     total = 0
-    for i in range(epochs):
-        bs = min(math.ceil(a * (delta ** (i // incr_interval)) + b), bs_max)
-        total += math.ceil(len(trainset) / bs)
+    if lr_method == "scaled_bs":
+        for i in range(epochs):
+            bs = init_bs * (delta ** (i // incr_interval))
+            total += math.ceil(len(trainset) / bs)
+    else:
+        a = (bs_max - init_bs) / (delta ** ((epochs - incr_interval) / incr_interval) - 1)
+        b = init_bs - a
+        for i in range(epochs):
+            bs = min(math.ceil(a * (delta ** (i // incr_interval)) + b), bs_max)
+            total += math.ceil(len(trainset) / bs)
     return total
 
 
@@ -107,7 +116,7 @@ def save_checkpoint(state):
 # Function to load the model checkpoint from a file
 def load_checkpoint():
     print(f"Loading checkpoint from {checkpoint_path}...")
-    checkpoint = torch.load(checkpoint_path)
+    checkpoint = torch.load(checkpoint_path, map_location='cuda:0')
     return checkpoint
 
 
@@ -115,9 +124,12 @@ def train(epoch, steps):
     # Calculate the new batch size based on the strategy
     global batch_size
     if case in ["incr_bs_decay_lr", "incr_bs_incr_lr", "incr_bs_warmup_lr"]:
-        a = (bs_max - init_bs) / (delta ** ((epochs - incr_interval) / incr_interval) - 1)
-        b = init_bs - a
-        new_batch_size = min(math.ceil(a * (delta ** (epoch // incr_interval)) + b), bs_max)
+        if lr_method == "scaled_bs":
+            new_batch_size = int(init_bs * (delta ** (epoch // incr_interval)))
+        else:
+            a = (bs_max - init_bs) / (delta ** ((epochs - incr_interval) / incr_interval) - 1)
+            b = init_bs - a
+            new_batch_size = min(math.ceil(a * (delta ** (epoch // incr_interval)) + b), bs_max)
     else:
         new_batch_size = batch_size
     print(f'batch size: {new_batch_size}')
@@ -259,6 +271,10 @@ def warmup_cosine_lr_lambda(epoch):
         return (lr_max / lr) * cosine_decay
 
 
+def scaled_bs_lr_lambda(epoch):
+    return lr_mult ** (epoch // incr_interval)
+
+
 # Command Line Argument
 def get_args():
     parser = argparse.ArgumentParser(description='PyTorch CIFAR100 Training with Schedulers')
@@ -280,17 +296,21 @@ if __name__ == '__main__':
     os.makedirs(os.path.dirname(checkpoint_path), exist_ok=True)
     lr_method = config["lr_method"]
     if case in ["incr_bs_decay_lr", "incr_bs_incr_lr", "incr_bs_warmup_lr"]:
-        bs_max = config["bs_max"]
+        if not lr_method == "scaled_bs":
+            bs_max = config["bs_max"]
         init_bs = batch_size
         delta = config["bs_delta"]
         incr_interval = config["incr_interval"]
     if case in ["incr_bs_incr_lr", "incr_bs_warmup_lr"]:
-        lr_max = config["lr_max"]
+        if not lr_method == "scaled_bs":
+            lr_max = config["lr_max"]
     if case == "incr_bs_warmup_lr":
         warmup_epochs = config["warmup_epochs"]
         warmup_interval = config["warmup_interval"]
     if lr_method == "poly":
         power = config["power"]
+    if lr_method == "scaled_bs":
+        lr_mult = config["lr_multiplier"]
 
     # Dataset Preparation
     download_and_extract_tiny_imagenet(data_dir='./data')
@@ -361,6 +381,9 @@ if __name__ == '__main__':
     elif lr_method == "quadruply_incr_bs":
         scheduler = optim.lr_scheduler.LambdaLR(optimizer, quadruply_incr_bs_lr_lambda)
 
+    elif lr_method == "scaled_bs":
+        scheduler = optim.lr_scheduler.LambdaLR(optimizer, scaled_bs_lr_lambda)
+
     print(optimizer)
 
     # Lists to save results
@@ -389,7 +412,7 @@ if __name__ == '__main__':
         steps = train(epoch, steps)
         test(epoch)
 
-        if lr_method in ["cosine", "exp_growth", "warmup_const", "warmup_cosine", "triply_incr_bs", "quadruply_incr_bs"]:
+        if lr_method in ["cosine", "exp_growth", "warmup_const", "warmup_cosine", "triply_incr_bs", "quadruply_incr_bs", "scaled_bs"]:
             scheduler.step()
 
         save_checkpoint({
